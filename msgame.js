@@ -243,15 +243,23 @@ function render(game) {
 
       field.style.display = "block";
       if(game.arr[row][col].state==="shown"){
+        
       let count = game.arr[row][col].count;
       if(count > 0 && !game.arr[row][col].mine){
         field.innerHTML = count.toString();
       }
-        if(field.classList.contains("oddfield")){
-        field.classList.add("oddshown");
-        }else{
-        field.classList.add("evenshown");
-        }
+          if(field.classList.contains("oddfield")){
+            field.classList.add("oddshown");
+            }else{
+            field.classList.add("evenshown");
+            }
+
+          if(game.arr[row][col].mine){
+          field.classList.add("mine");
+          }else{
+            field.classList.remove("mine");
+          }
+
       }
       else{
       field.classList.remove("oddshown");
@@ -264,6 +272,7 @@ function render(game) {
       field.classList.remove("marked");
       
   }
+
       //if(s.arr[row][col]==="shown" ? field.classList.add("shown") : field.classList.remove("shown"));
       //if(s.arr[row][col]==="hidden" ? field.classList.add("hidden") : field.classList.remove("hidden"));
       //if(s.arr[row][col]==="marked" ? field.classList.add("marked") : field.classList.remove("marked"));
@@ -298,13 +307,14 @@ function prepare_dom(s) {
   */
 
 
-
+/*
    JField0.on("click", ()=>{
     field_click_cb( s, Field, i);
   });
-
+*/
     Field.addEventListener('contextmenu', function(e) {
       e.preventDefault();
+      console.log("conttttttttttttttttttttttttttttst");
       field_hold_cb( s, Field, i);
     }, false);
 
@@ -313,12 +323,20 @@ function prepare_dom(s) {
     field_hold_cb( s, Field, i);
   });
   */
- /*
-    JField0.on("taphold", function(){
+ 
+    JField0.on({
+      taphold: function(e){
       console.log("im in tapppppppppppppp");
       field_hold_cb( s, Field, i);
-    });
-*/
+      e.preventDefault();
+      return false;
+    },
+      click:function(){
+      console.log("im clickinggggggg");
+      field_click_cb( s, Field, i);
+      }
+    })
+
     grid.appendChild(Field);
   }
 }
@@ -375,10 +393,18 @@ function field_hold_cb(game, field_div, ind) {
   render(game);
   // check if we won and activate overlay if we did
 
- /* if( s.onoff.reduce((res,l)=>res && !l, true)) {
-    document.querySelector("#overlay").classList.toggle("active");
-  }*
-  clickSound.play();*/
+  if( game.exploded ||
+    game.nuncovered === game.nrows * game.ncols - game.nmines) {
+    clearInterval(IntervalID);
+    if(game.exploded){
+      document.querySelector("#overlayin p").innerHTML = "YOU LOST!!!!";
+      document.querySelector("#overlay").classList.toggle("active");
+    }else{
+      document.querySelector("#overlayin p").innerHTML = "Congratulations, you won!!!";
+      document.querySelector("#overlay").classList.toggle("active");
+    }
+
+  }
 }
 function createNew(game,rows, cols, mines) {
 
@@ -445,11 +471,10 @@ function start(){
       let rows = null;
       let cols = null;
       let mines = null;
-      let difficulty = null;
       [rows,cols] = document.getElementById("changed").getAttribute("data-size").split("x").map(s=>Number(s));
-      difficulty = document.getElementById("changed").getAttribute("data-difficulty");
       mines = document.getElementById("changed").getAttribute("data-mine");
       createNew(game,rows,cols,mines);
+      $(".field.mine").removeClass("mine");
     });
 
     prepare_dom(game);

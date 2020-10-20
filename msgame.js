@@ -305,7 +305,6 @@ function prepare_dom(s) {
 
     Field.addEventListener('contextmenu', function(e) {
       e.preventDefault();
-      field_hold_cb( s, Field, i);
     }, false);
 
 

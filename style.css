@@ -1,6 +1,5 @@
 .container{
   text-align: center;
-  width:100vh;
   background-color: rgb(19, 115, 51);
 }
 img{
@@ -216,7 +215,7 @@ p.glow {
   -moz-appearance: none;
   -webkit-appearance: none;
   content: url('sound-on.webp');
-  display: block;
+  display: inline;
   outline: none;
   user-select: none;
 }

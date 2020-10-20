@@ -1,5 +1,7 @@
 .container{
   text-align: center;
+  width:100vh;
+  background-color: rgb(19, 115, 51);
 }
 img{
     max-width: 40px;
@@ -38,7 +40,7 @@ img{
 }
 
 .gridwrapper {
-  background-color: black;
+  background-color: white;
 
   display: flex;
   justify-content: center;
@@ -57,14 +59,14 @@ img{
 
 .field.oddshown {
 
-  background-color:#ad7f6a;
+  background-color:rgb(215, 184, 153);
   opacity: 1;
   transform: rotateY(0deg);
 
 }
 .field.evenshown {
 
-  background-color:#e0a389;
+  background-color:rgb(228, 194, 159);
   opacity: 1;
   transform: rotateY(0deg);
 
@@ -110,11 +112,11 @@ img{
 }
 .oddfield {
 
-  background-color: rgb(14, 134, 10);
+  background-color: rgb(162, 209, 73);
 
 }
 .evenfield {
-  background-color: rgb(7, 204, 40);
+  background-color: 	rgb(170, 215, 81);
 }
 
 #overlay {
@@ -205,4 +207,20 @@ p.glow {
 @keyframes spinIn {
   from { transform: scale(0.1) rotateX(0deg) ; opacity: 0; }
   to { transform: scale(1) rotateX(360deg) ;  opacity: 1; }
+}
+
+#sound {
+  width: 40px;
+  height: 30px;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  content: url('sound-on.webp');
+  display: block;
+  outline: none;
+  user-select: none;
+}
+
+#sound:checked {
+  content: url('sound-off.webp');
 }

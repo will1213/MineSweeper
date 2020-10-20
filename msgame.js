@@ -67,7 +67,7 @@ let MSGame = (function(){
     }
     sprinkleMines(row, col) {
         // prepare a list of allowed coordinates for mine placement
-
+        displayTime();
       let allowed = [];
       for(let r = 0 ; r < this.nrows ; r ++ ) {
         for( let c = 0 ; c < this.ncols ; c ++ ) {
@@ -113,6 +113,7 @@ let MSGame = (function(){
     // this is the 'left-click' functionality
 
     uncover(row, col) {
+ 
       console.log("uncover", row, col);
       // if coordinates invalid, refuse this request
       if( ! this.validCoord(row,col)) return false;
@@ -138,11 +139,17 @@ let MSGame = (function(){
       if( this.arr[row][col].mine) {
         this.exploded = true;
       }
+      if(this.exploded){
+      bombSound.play();
+    }else{
+      clickSound.play();
+    }
       return true;
     }
     // puts a flag on a cell
     // this is the 'right-click' or 'long-tap' functionality
     mark(row, col) {
+
       console.log("mark", row, col);
       // if coordinates invalid, refuse this request
       if( ! this.validCoord(row,col)) return false;
@@ -153,6 +160,7 @@ let MSGame = (function(){
       this.nmarked += this.arr[row][col].state == STATE_MARKED ? -1 : 1;
       this.arr[row][col].state = this.arr[row][col].state == STATE_MARKED ?
         STATE_HIDDEN : STATE_MARKED;
+      flagSound.play();
       return true;
     }
     // returns array of strings representing the rendering of the board
@@ -200,7 +208,6 @@ let MSGame = (function(){
 /**
  * updates DOM to reflect current state
  * - hides unnecessary cards by setting their display: none
- * - adds "flipped" class to cards that were flipped
  * 
  * @param {object} game 
  */
@@ -272,10 +279,6 @@ function render(game) {
       field.classList.remove("marked");
       
   }
-
-      //if(s.arr[row][col]==="shown" ? field.classList.add("shown") : field.classList.remove("shown"));
-      //if(s.arr[row][col]==="hidden" ? field.classList.add("hidden") : field.classList.remove("hidden"));
-      //if(s.arr[row][col]==="marked" ? field.classList.add("marked") : field.classList.remove("marked"));
     }
   }
   document.querySelectorAll(".remain").forEach(
@@ -299,40 +302,21 @@ function prepare_dom(s) {
     Field.setAttribute("data-fieldInd", i);
 
     let JField0 = $(Field);
-    let JField = $(Field);
-    /*
-    Field.on("click", ()=>{
-      field_click_cb( s, Field, i);
-    });
-  */
 
-
-/*
-   JField0.on("click", ()=>{
-    field_click_cb( s, Field, i);
-  });
-*/
     Field.addEventListener('contextmenu', function(e) {
       e.preventDefault();
-      console.log("conttttttttttttttttttttttttttttst");
       field_hold_cb( s, Field, i);
     }, false);
 
-/*
-  JField0.on("contextmenu", function(){
-    field_hold_cb( s, Field, i);
-  });
-  */
- 
+
+
     JField0.on({
       taphold: function(e){
-      console.log("im in tapppppppppppppp");
       field_hold_cb( s, Field, i);
       e.preventDefault();
       return false;
     },
       click:function(){
-      console.log("im clickinggggggg");
       field_click_cb( s, Field, i);
       }
     })
@@ -372,21 +356,19 @@ function field_click_cb(game, field_div, ind) {
     }
 
   }
-
 }
 /**
- * callback for clicking a field
- * - toggle surrounding elements
+ * callback for mark a field
  * - check for winning condition
  * @param {state} game 
  * @param {HTMLElement} field_div 
  * @param {number} ind 
  */
 function field_hold_cb(game, field_div, ind) {
+
   const col = ind % game.ncols;
   const row = Math.floor(ind / game.ncols);
 
-  //field_div.classList.add("shown");
   game.mark(row, col);
   console.log(game.getRendering().join("\n"));
   console.log(game.getStatus());
@@ -405,12 +387,12 @@ function field_hold_cb(game, field_div, ind) {
     }
 
   }
+
 }
 function createNew(game,rows, cols, mines) {
 
 
   game.init(rows, cols, mines);
-  console.log(game.nrows,game.ncols,game.nmines);
 
   const grid = document.querySelector(".grid");
   for( let i = 0 ; i < grid.children.length ; i ++) {
@@ -421,12 +403,15 @@ function createNew(game,rows, cols, mines) {
 
   console.log(game.getRendering().join("\n"));
   console.log(game.getStatus());
+  $(".time").text("");
   clearInterval(IntervalID);
-  displayTime();
+
   
 }
 var IntervalID;
-
+let clickSound = new Audio("uncover.mp3");
+let flagSound = new Audio("flag.mp3");
+let bombSound = new Audio("bomb.mp3")
 function displayTime(){
 
   let count = 0;
@@ -441,8 +426,6 @@ function start(){
 
   let game = new MSGame();
 
-  let html = document.querySelector("html");
-    console.log("Your render area:", html.clientWidth, "x", html.clientHeight)
   
     // register callbacks for buttons
    document.querySelectorAll(".dropdown-item").forEach((button) =>{
@@ -477,6 +460,11 @@ function start(){
       $(".field.mine").removeClass("mine");
     });
 
+    let soundButton = document.querySelector("#sound");
+    soundButton.addEventListener("change", () => {
+      clickSound.volume = soundButton.checked ? 0 : 1;
+    });
+
     prepare_dom(game);
     createNew(game,8,10,10);
 
@@ -484,41 +472,3 @@ function start(){
 }
 
 window.addEventListener("DOMContentLoaded", start);
-/*
-let game = new MSGame();
-  game.init(8, 10, 10);
-  console.log(game.getRendering().join("\n"));
-  console.log(game.getStatus());
-  
-
-
-  game.uncover(2,5);
-  console.log(game.getRendering().join("\n"));
-  console.log(game.getStatus());
-  
-  game.uncover(5,5);
-  console.log(game.getRendering().join("\n"));
-  console.log(game.getStatus());
-  
-  game.mark(4,5);
-  console.log(game.getRendering().join("\n"));
-  console.log(game.getStatus());
- 
-
-  game.init(14, 18, 40);
-  console.log(game.getRendering().join("\n"));
-  console.log(game.getStatus());
-
-  game.uncover(2,5);
-  console.log(game.getRendering().join("\n"));
-  console.log(game.getStatus());
-  
-  game.uncover(5,5);
-  console.log(game.getRendering().join("\n"));
-  console.log(game.getStatus());
-  
-  game.mark(4,5);
-  console.log(game.getRendering().join("\n"));
-  console.log(game.getStatus());
-
-  console.log("end");*/

@@ -82,6 +82,13 @@ img{
   opacity: 1;
   transform: rotateY(0deg);
 }
+.field.mine{
+
+  background-image: url("mine.png");
+  background-position: right;
+  opacity: 1;
+  transform: rotateY(0deg);
+}
 
 
 
@@ -95,7 +102,6 @@ img{
   border-color: blue;
   background-color: rgb(14, 134, 10);
   color: blue;
-  font-size: 1.3em;
   font-family: 'Sansita Swashed', cursive;
   max-height: 30px;
   text-align: center;
